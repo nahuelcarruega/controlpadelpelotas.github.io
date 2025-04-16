@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Usos de Pelotas de Padel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url(./BD/premium_photo-1708692919998-e3dc853ef8a8.jpeg);
+            background-size: cover;
+            background-position: center;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .cuadro {
+            margin-bottom: 20px;
+        }
+
+        .cuadro label {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .cuadro input, .cuadro textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .cuadro input[type="text"] {
+            height: 40px;
+        }
+
+        .tabla-uso {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .tabla-uso th, .tabla-uso td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .tabla-uso th {
+            background-color: #f4f4f4;
+        }
+
+        .boton {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+
+        .boton:hover {
+            background-color: #45a049;
+        }
+
+        .registros {
+            margin-top: 30px;
+        }
+
+        .registro-item {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .registro-item p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Control de Usos de Pelotas de Padel</h1>
+
+        <div class="cuadro">
+            <label for="usos">Cantidad de Usos y Precios:</label>
+            <table class="tabla-uso">
+                <tr><th>Uso</th><th>Precio</th></tr>
+                <tr><td>1er uso</td><td>$6000</td></tr>
+                <tr><td>2do uso</td><td>$6000</td></tr>
+                <tr><td>3er uso</td><td>$6000</td></tr>
+                <tr><td>4to uso</td><td>$6000</td></tr>
+                <tr><td>5to al 8vo uso</td><td>$4000</td></tr>
+            </table>
+        </div>
+
+        <div class="cuadro">
+            <label for="nombre">Nombre de la Persona:</label>
+            <input type="text" id="nombre" placeholder="Escribe el nombre">
+        </div>
+
+        <div class="cuadro">
+            <label for="observaciones">Observaciones:</label>
+            <textarea id="observaciones" rows="4" placeholder="Escribe las observaciones aquí..."></textarea>
+        </div>
+
+        <button class="boton" onclick="guardar()">Guardar Información</button>
+
+        <div class="registros">
+            <h2>Registros Guardados:</h2>
+            <div id="lista-registros"></div>
+        </div>
+    </div>
+
+    <script>
+  // Función para guardar los datos
+  function guardar() {
+        const nombre = document.getElementById('nombre').value;
+        const observaciones = document.getElementById('observaciones').value;
+
+        if (nombre === '' || observaciones === '') {
+            alert("Por favor, completa todos los campos.");
+            return;
+        }
+
+        const datos = {
+            nombre: nombre,
+            observaciones: observaciones
+        };
+
+        try {
+            const timestamp = Date.now();
+            localStorage.setItem(`registro_${timestamp}`, JSON.stringify(datos));
+            document.getElementById('nombre').value = '';
+            document.getElementById('observaciones').value = '';
+            mostrarRegistros();
+        } catch (e) {
+            console.error('Error al guardar en localStorage:', e);
+            alert('Hubo un problema guardando los datos. Intenta de nuevo.');
+        }
+    }
+
+    // Función para mostrar los registros guardados
+    function mostrarRegistros() {
+        const listaRegistros = document.getElementById('lista-registros');
+        listaRegistros.innerHTML = '';
+
+        for (let i = 0; i < localStorage.length; i++) {
+            const clave = localStorage.key(i);
+            const registro = JSON.parse(localStorage.getItem(clave));
+
+            const registroDiv = document.createElement('div');
+            registroDiv.classList.add('registro-item');
+            registroDiv.innerHTML = `
+                <p><strong>Nombre:</strong> ${registro.nombre}</p>
+                <p><strong>Observaciones:</strong> ${registro.observaciones}</p>
+                <button onclick="borrarRegistro('${clave}')">Borrar</button>
+            `;
+
+            listaRegistros.appendChild(registroDiv);
+        }
+    }
+
+    // Nueva función para borrar registros
+    function borrarRegistro(clave) {
+        const confirmacion = confirm("¿Estás seguro de que deseas borrar este registro?");
+        if (confirmacion) {
+            localStorage.removeItem(clave);
+            mostrarRegistros();
+            alert("El registro ha sido eliminado.");
+        }
+    }
+
+    // Mostrar registros al cargar la página
+    window.onload = function() {
+        mostrarRegistros();
+    };
+    </script>
+  
+    
+
+</body>
+</html>
