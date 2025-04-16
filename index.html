@@ -137,7 +137,69 @@
     </div>
 
     <script>
-  // Import the functions you need from the SDKs you need
+  // Función para guardar los datos
+  function guardar() {
+        const nombre = document.getElementById('nombre').value;
+        const observaciones = document.getElementById('observaciones').value;
+
+        if (nombre === '' || observaciones === '') {
+            alert("Por favor, completa todos los campos.");
+            return;
+        }
+
+        const datos = {
+            nombre: nombre,
+            observaciones: observaciones
+        };
+
+        try {
+            const timestamp = Date.now();
+            localStorage.setItem(`registro_${timestamp}`, JSON.stringify(datos));
+            document.getElementById('nombre').value = '';
+            document.getElementById('observaciones').value = '';
+            mostrarRegistros();
+        } catch (e) {
+            console.error('Error al guardar en localStorage:', e);
+            alert('Hubo un problema guardando los datos. Intenta de nuevo.');
+        }
+    }
+
+    // Función para mostrar los registros guardados
+    function mostrarRegistros() {
+        const listaRegistros = document.getElementById('lista-registros');
+        listaRegistros.innerHTML = '';
+
+        for (let i = 0; i < localStorage.length; i++) {
+            const clave = localStorage.key(i);
+            const registro = JSON.parse(localStorage.getItem(clave));
+
+            const registroDiv = document.createElement('div');
+            registroDiv.classList.add('registro-item');
+            registroDiv.innerHTML = `
+                <p><strong>Nombre:</strong> ${registro.nombre}</p>
+                <p><strong>Observaciones:</strong> ${registro.observaciones}</p>
+                <button onclick="borrarRegistro('${clave}')">Borrar</button>
+            `;
+
+            listaRegistros.appendChild(registroDiv);
+        }
+    }
+
+    // Nueva función para borrar registros
+    function borrarRegistro(clave) {
+        const confirmacion = confirm("¿Estás seguro de que deseas borrar este registro?");
+        if (confirmacion) {
+            localStorage.removeItem(clave);
+            mostrarRegistros();
+            alert("El registro ha sido eliminado.");
+        }
+    }
+
+    // Mostrar registros al cargar la página
+    window.onload = function() {
+        mostrarRegistros();
+    };
+    // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -154,6 +216,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+    
     </script>
   
     
